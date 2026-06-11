@@ -8,24 +8,43 @@
 		body,
 		html {
 			height: 100%;
+			margin: 0;
+			overflow: hidden;
 		}
 
-		div {
-			width: 49%;
-			height: 90%;
-			float: left;
-			margin-right: 10px
+		.panes {
+			display: flex;
+			gap: 10px;
+			height: 100vh;
+			box-sizing: border-box;
+			padding: 5px;
+		}
+
+		.panes > div {
+			flex: 1 1 0;
+			min-width: 0;
+			display: flex;
+			flex-direction: column;
 		}
 
 		textarea {
+			flex: 1 1 auto;
 			width: 100%;
-			height: 100%;
+			min-height: 0;
+		}
+
+		/* TinyMCE replaces the textarea with this wrapper; make it fill the column */
+		.panes > div > .tox-tinymce {
+			flex: 1 1 auto;
+			min-height: 0;
 		}
 	</style>
 </head>
 <body>
-	<div><textarea id="previewCode" class="previewCode" name="previewCode"></textarea></div>
-	<div><textarea id="sourceCode" class="sourceCode"></textarea></div>
+	<div class="panes">
+		<div><textarea id="previewCode" class="previewCode" name="previewCode"></textarea></div>
+		<div><textarea id="sourceCode" class="sourceCode"></textarea></div>
+	</div>
 	<script>
 		tinymce.init({
 	      selector: "#previewCode",
@@ -69,7 +88,7 @@
 	      menubar: false,
           height: '100%',
           width: '100%',
-	      toolbar: ["code | undo redo | bold italic underline | styleselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | table"],
+	      toolbar: ["code | undo redo | bold italic underline | codeinline | styleselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | table"],
 	      plugins: "code image lists link table",
 				table_default_styles: {},
 				table_default_attributes: {},
@@ -83,6 +102,28 @@
 				],
 				table_advtab: false,
 	      setup: function(ed) {
+	        ed.on('init', function() {
+	          ed.formatter.register('codeinline', { inline: 'code' });
+	        });
+
+	        var wrapInCode = function() {
+	          ed.formatter.toggle('codeinline');
+	        };
+
+	        ed.ui.registry.addToggleButton('codeinline', {
+	          text: 'Code',
+	          tooltip: 'Wrap selection in <code> (Ctrl+E)',
+	          onAction: wrapInCode,
+	          onSetup: function(api) {
+	            var changed = ed.formatter.formatChanged('codeinline', function(state) {
+	              api.setActive(state);
+	            });
+	            return function() { changed.unbind(); };
+	          }
+	        });
+
+	        ed.addShortcut('ctrl+e', 'Wrap selection in <code>', wrapInCode);
+
 	        ed.on('change', function(e) {
 	          updateSource(ed.getContent());
 	        });
