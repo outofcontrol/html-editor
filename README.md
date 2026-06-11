@@ -19,3 +19,10 @@ A single static HTML page demonstrating a WYSIWYG rich-text editor with a live t
 No build step or dependencies. TinyMCE is loaded from a CDN.
 
 Open `public/index.html` directly in a browser, or serve the `public/` directory with any static server.
+
+## Demo site
+
+You can test out the project on a live demo site here: 
+
+https://outofcontrol.ca/editor/
+
