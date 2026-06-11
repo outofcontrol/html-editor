@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 Out of Control, Inc.
+SPDX-License-Identifier: MIT
+-->
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
